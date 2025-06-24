@@ -12,23 +12,18 @@ class Settings(BaseSettings):
     APP_DEBUG: bool = True
     APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
+
+    # GENERAL
+    DEFAULT_BOUNDS: str = "33.373294,32.473972,-97.524450,-96.453058"
     
-    # Security
-    SECRET_KEY: str
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    
-    # API Keys (add more as needed)
-    # OPENAI_API_KEY: str = ""
-    # GOOGLE_MAPS_API_KEY: str = ""
-    
-    # Database (uncomment and configure as needed)
-    # DATABASE_URL: str = ""
+    # FLIGHT RADAR
+    FLIGHT_RADAR_TOKEN: str = os.getenv("FLIGHT_RADAR_TOKEN")
     
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 @lru_cache()
 def get_settings() -> Settings:
+
     return Settings()
 
 # Initialize settings

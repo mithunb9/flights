@@ -13,31 +13,9 @@ services:
       - APP_ENV=${APP_ENV:-development}
       - APP_DEBUG=${APP_DEBUG:-true}
       - SECRET_KEY=${SECRET_KEY}
-      # Add other environment variables as needed
     ports:
       - "${APP_PORT:-8000}:8000"
     volumes:
       - ./app:/app/app
       - ./requirements.txt:/app/requirements.txt
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    # Uncomment the following if you add a database
-    # depends_on:
-    #   - db
-
-  # Example database service (PostgreSQL)
-  # db:
-  #   image: postgres:15
-  #   container_name: flights-db
-  #   restart: unless-stopped
-  #   environment:
-  #     - POSTGRES_USER=${DB_USER:-postgres}
-  #     - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
-  #     - POSTGRES_DB=${DB_NAME:-flights}
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data/
-
-# Uncomment if using PostgreSQL
-# volumes:
-#   postgres_data:

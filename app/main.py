@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from .routers import flight
 from .config import settings
+from .data.flightradar import get_usage
 
 app = FastAPI(
     title="Flight API",
@@ -8,6 +10,8 @@ app = FastAPI(
     version="0.1.0",
     debug=settings.APP_DEBUG
 )
+
+app.include_router(flight.router, prefix="/api")
 
 # CORS middleware configuration
 app.add_middleware(
@@ -26,6 +30,13 @@ def read_root():
         "debug": settings.APP_DEBUG
     }
 
+@app.get("/usage")
+def get_usage_endpoint():
+    return {
+        "flightradar": get_usage(),
+        "opensky": get_usage()
+    }
+
 @app.get("/health")
 def health_check():
     """Health check endpoint"""
@@ -34,3 +45,4 @@ def health_check():
         "environment": settings.APP_ENV,
         "debug": settings.APP_DEBUG
     }
+
