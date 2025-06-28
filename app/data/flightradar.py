@@ -4,6 +4,7 @@ from app.config import settings
 from fastapi import HTTPException
 from app.models.flight import Flight
 from datetime import datetime
+from app.data.airline import populate_airline, populate_country
 
 FLIGHT_RADAR_URL = "https://fr24api.flightradar24.com/api/"
 FLIGHT_POSITIONS_FULL_ENDPOINT = "live/flight-positions/full"
@@ -29,9 +30,19 @@ def get_flights(bounds: str = settings.DEFAULT_BOUNDS):
         
     flights_data = response.json().get('data', [])
     flights = []
+
+    if not flights_data:
+        return []
+
     for flight in flights_data:
         callsign = flight.get('callsign', '')
         flight_number = flight.get('flight', '')
+        airline = populate_airline(flight.get('operating_as', ''))
+        country = populate_country(flight.get('operating_as', ''))
+
+        if not callsign or not flight_number or not airline:
+            continue
+        
         latitude = flight.get('lat', 0)
         longitude = flight.get('lon', 0)
         altitude = flight.get('alt', 0)
@@ -47,7 +58,9 @@ def get_flights(bounds: str = settings.DEFAULT_BOUNDS):
 
         flights.append(Flight(
             callsign=callsign, 
-            flight_number=flight_number, 
+            flight_number=flight_number,
+            airline=airline,
+            country=country,
             latitude=latitude, 
             longitude=longitude, 
             altitude=altitude, 

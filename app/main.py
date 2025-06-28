@@ -11,7 +11,7 @@ app = FastAPI(
     debug=settings.APP_DEBUG
 )
 
-app.include_router(flight.router, prefix="/api")
+app.include_router(flight.router, prefix="/api/flight")
 
 # CORS middleware configuration
 app.add_middleware(

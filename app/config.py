@@ -19,6 +19,16 @@ class Settings(BaseSettings):
     # FLIGHT RADAR
     FLIGHT_RADAR_TOKEN: str = os.getenv("FLIGHT_RADAR_TOKEN")
     
+    # Redis settings
+    REDIS_HOST: str = os.getenv("REDIS_HOST", "localhost")
+    REDIS_PORT: int = int(os.getenv("REDIS_PORT", 6379))
+    REDIS_DB: int = int(os.getenv("REDIS_DB", 0))
+    REDIS_PASSWORD: str = os.getenv("REDIS_PASSWORD", "")
+    REDIS_URL: str = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+    
+    # Cache settings
+    CACHE_TTL: int = int(os.getenv("CACHE_TTL", 300))  # 5 minutes default
+    
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 @lru_cache()

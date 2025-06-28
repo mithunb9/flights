@@ -1,6 +1,22 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: flights-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - flights-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
   app:
     build:
       context: .
@@ -13,9 +29,24 @@ services:
       - APP_ENV=${APP_ENV:-development}
       - APP_DEBUG=${APP_DEBUG:-true}
       - SECRET_KEY=${SECRET_KEY}
+      - REDIS_HOST=redis
     ports:
       - "${APP_PORT:-8000}:8000"
     volumes:
       - ./app:/app/app
       - ./requirements.txt:/app/requirements.txt
+      - ./alembic.ini:/app/alembic.ini
+      - ./alembic:/app/alembic
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - flights-network
+
+networks:
+  flights-network:
+    driver: bridge
+
+volumes:
+  redis_data:
